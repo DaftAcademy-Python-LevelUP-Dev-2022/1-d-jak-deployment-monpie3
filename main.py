@@ -63,15 +63,13 @@ class Event_Details(BaseModel):
     date: str
     event: str
     
-    
+  
 @app.put("/events", status_code=200)
-async def add_event(item : Event_Details, request : Request):
-    json_info = await request.json()
+def add_event(item : Event_Details):
     id = counter()
-    
     new_json =  {
-        "date" : json_info["date"],
-        "name" : json_info["event"], 
+        "date" : item.date,
+        "name" : item.event, 
         "date_added": datetime.date.today(),
         "id": id
     }
@@ -81,7 +79,7 @@ async def add_event(item : Event_Details, request : Request):
 
 
 @app.get("/events/{my_date}", status_code=200)
-async def show_event(my_date : str, response: Response):  
+def show_event(my_date : str, response: Response):  
     try:
         datetime.datetime.strptime(my_date, "%Y-%m-%d")
     except ValueError:  
@@ -98,7 +96,7 @@ async def show_event(my_date : str, response: Response):
         if my_event["date"] == my_date:
             event_in_this_day.append(my_event)
             
-    if len(event_in_this_day) != 0:    
+    if len(event_in_this_day):    
         return event_in_this_day  
     else: 
         response.status_code = status.HTTP_404_NOT_FOUND
